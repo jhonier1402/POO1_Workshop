@@ -21,9 +21,9 @@ public class WorkshopTest {
     @Test
     //Test para el area del circulo
     public void testAreaCirculo() {
-        assertEquals(Math.PI, tester.areaCirculo(1), 0.001);
-        assertEquals((Math.PI*10), tester.areaCirculo(10), 0.001);;
-        assertEquals(0, tester.areaCirculo(0), 0.001);
+        assertEquals(Math.PI, tester.areaCirculo(1));
+        assertEquals((Math.PI*10), tester.areaCirculo(10));;
+        assertEquals(0, tester.areaCirculo(0));
     }
 
     @Test
@@ -31,7 +31,7 @@ public class WorkshopTest {
         assertEquals("Aries", tester.zoodiac(9,4));
         assertNotEquals("Pisces",tester.zoodiac(30,2));
         assertEquals("Invalid Date", tester.zoodiac(31,2));
-        assertEquals("Gemini", tester.zoodiac(14,6));
+        assertEquals("Geminis", tester.zoodiac(14,6));
         assertEquals("Cancer", tester.zoodiac(22,6));
         assertNotEquals("Leo",tester.zoodiac(30,8));
     }
@@ -217,11 +217,11 @@ public class WorkshopTest {
     @Test
     public void testContarCaracteres() {
         // Test 1: Contar caracteres en cadena
-        assertEquals(13, tester.contarCaracteres("Hola mundo"));
+        assertEquals(10, tester.contarCaracteres("Hola mundo"));
         // Test 2: Contar caracteres en cadena vacía
         assertEquals(0, tester.contarCaracteres(""));
         // Test 3: Contar caracteres en cadena con espacios
-        assertEquals(14, tester.contarCaracteres("Hola   mundo"));
+        assertEquals(12, tester.contarCaracteres("Hola   mundo"));
     }
 
     // Test para el método invertirCadena
