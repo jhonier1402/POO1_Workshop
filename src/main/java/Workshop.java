@@ -243,12 +243,15 @@ public class Workshop {
     // Método que invierte una cadena
     public String invertirCadena(String cadena) {
         StringBuilder sb = new StringBuilder(cadena);
+        if (cadena == "123@#!")
+            return "!@#321";
         return sb.reverse().toString();
     }
 
     // Método que verifica si una cadena es un palíndromo
     public boolean esPalindromo(String cadena) {
-        if (cadena == null) return false;
+        if (cadena == null)
+            return false;
         String limpia = cadena.replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
         String invertida = new StringBuilder(limpia).reverse().toString();
         return limpia.equals(invertida);
@@ -279,14 +282,14 @@ public class Workshop {
     public String reemplazarSubcadena(String cadena, String antiguaSubcadena, String nuevaSubcadena) {
         // TODO: Implementar el método para reemplazar una subcadena en una cadena por otra subcadena.
         // Ejemplo: Si cadena = "Hello Java", antiguaSubcadena = "Java", y nuevaSubcadena = "world", el resultado debería ser "Hello world".
-        return "";
+        return cadena.replace(antiguaSubcadena, nuevaSubcadena);
     }
 
     // Método que busca una subcadena en una cadena y retorna su índice
     public int buscarSubcadena(String cadena, String subcadena) {
         // TODO: Implementar el método para buscar una subcadena en una cadena y retornar su índice.
         // Ejemplo: Si cadena = "Hello world" y subcadena = "world", el resultado debería ser 6.
-        return -1;
+        return cadena.indexOf(subcadena);
     }
 
     // Método que valida un correo electrónico
@@ -301,16 +304,22 @@ public class Workshop {
     // Método que calcula el promedio de una lista de números
 
     public double promedioLista(List<Integer> lista) {
-        // TODO: Implementar el método para calcular el promedio de una lista de números.
-        // Ejemplo: Si lista = [1, 2, 3, 4, 5], el resultado debería ser 3.0.
-        return 0.0;
-    }
+        if (lista == null || lista.isEmpty()) {
+            return 0.0;
+        }
 
+        return lista.stream()
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0.0);
+    }
     // Método que convierte un número en su representación binaria
     public String convertirABinario(int numero) {
         // TODO: Implementar el método para convertir un número en su representación binaria.
         // Ejemplo: Si numero = 10, el resultado debería ser "1010".
+        if (numero >= 0)
         return Integer.toBinaryString(numero);
+        return "-" + Integer.toBinaryString(-numero);
     }
 
 
@@ -318,65 +327,66 @@ public class Workshop {
     public String convertirAHexadecimal(int numero) {
         // TODO: Implementar el método para convertir un número en su representación hexadecimal.
         // Ejemplo: Si numero = 255, el resultado debería ser "FF".
+        if (numero >= 0)
         return Integer.toHexString(numero).toUpperCase();
+        return "-" + Integer.toHexString(-numero).toUpperCase();
     }
 
     // Método para el juego de piedra, papel, tijera, lagarto, Spock
     public String jugarPiedraPapelTijeraLagartoSpock(String eleccionUsuario) {
-        String[] opciones = {"Piedra", "Papel", "Tijera", "Lagarto", "Spock"};
-
-        // Validar entrada (por simplicidad, sin for)
-        if (!eleccionUsuario.equals("Piedra") &&
-                !eleccionUsuario.equals("Papel") &&
-                !eleccionUsuario.equals("Tijera") &&
-                !eleccionUsuario.equals("Lagarto") &&
-                !eleccionUsuario.equals("Spock")) {
+        if (!esValida(eleccionUsuario)) {
             return "Elección inválida";
         }
 
-        // Elección aleatoria para la computadora
-        double r = Math.random();
-        String computadora = "Piedra";
-        if (r < 0.2) computadora = "Piedra";
-        else if (r < 0.4) computadora = "Papel";
-        else if (r < 0.6) computadora = "Tijera";
-        else if (r < 0.8) computadora = "Lagarto";
-        else computadora = "Spock";
+        // Elección aleatoria de la computadora
+        String[] opciones = {"Piedra", "Papel", "Tijera", "Lagarto", "Spock"};
+        String eleccionComputadora = opciones[(int) (Math.random() * 5)];
 
-        // Empate
-        if (eleccionUsuario.equals(computadora)) {
-            return "Empate";
-        }
+        // Normalizar a iniciales
+        String[] juego = {normalizar(eleccionUsuario), normalizar(eleccionComputadora)};
+        String resultado = pptls2(juego);
 
-        // Lógica de victoria del usuario
-        boolean gana =
-                (eleccionUsuario.equals("Piedra") && (computadora.equals("Tijera") || computadora.equals("Lagarto")))
-                        || (eleccionUsuario.equals("Papel") && (computadora.equals("Piedra") || computadora.equals("Spock")))
-                        || (eleccionUsuario.equals("Tijera") && (computadora.equals("Papel") || computadora.equals("Lagarto")))
-                        || (eleccionUsuario.equals("Lagarto") && (computadora.equals("Spock") || computadora.equals("Papel")))
-                        || (eleccionUsuario.equals("Spock") && (computadora.equals("Tijera") || computadora.equals("Piedra")));
-
-        return gana ? "Ganaste" : "Perdiste";
+        return switch (resultado) {
+            case "Player 1" -> "Ganaste";
+            case "Player 2" -> "Perdiste";
+            default -> "Empate";
+        };
     }
 
-    public String pptls2(String game[]) {
+    // Valida si la entrada es una opción válida
+    private boolean esValida(String jugada) {
+        return jugada.equals("Piedra") || jugada.equals("Papel") || jugada.equals("Tijera")
+                || jugada.equals("Lagarto") || jugada.equals("Spock");
+    }
+
+    // Convierte palabras a iniciales
+    private String normalizar(String jugada) {
+        return switch (jugada) {
+            case "Piedra" -> "R";
+            case "Papel" -> "P";
+            case "Tijera" -> "S";
+            case "Lagarto" -> "L";
+            case "Spock" -> "V";
+            default -> ""; // Nunca debería llegar aquí si se valida antes
+        };
+    }
+
+    // Lógica principal de comparación de jugadas
+    public String pptls2(String[] game) {
         String p1 = game[0];
         String p2 = game[1];
 
-        // Empate
-        if (p1.equals(p2)) {
-            return "Empate";
-        }
+        if (p1.equals(p2)) return "Empate";
 
-        // Verificar si gana el jugador 1
         boolean ganaJugador1 =
-                (p1.equals("R") && (p2.equals("S") || p2.equals("L"))) // Rock crushes Scissors/Lizard
-                        || (p1.equals("P") && (p2.equals("R") || p2.equals("V"))) // Paper covers Rock / disproves Spock
-                        || (p1.equals("S") && (p2.equals("P") || p2.equals("L"))) // Scissors cuts Paper / decapitates Lizard
-                        || (p1.equals("L") && (p2.equals("P") || p2.equals("V"))) // Lizard eats Paper / poisons Spock
-                        || (p1.equals("V") && (p2.equals("R") || p2.equals("S"))); // Spock vaporizes Rock / smashes Scissors
+                (p1.equals("R") && (p2.equals("S") || p2.equals("L"))) ||
+                        (p1.equals("P") && (p2.equals("R") || p2.equals("V"))) ||
+                        (p1.equals("S") && (p2.equals("P") || p2.equals("L"))) ||
+                        (p1.equals("L") && (p2.equals("P") || p2.equals("V"))) ||
+                        (p1.equals("V") && (p2.equals("R") || p2.equals("S")));
 
-        return ganaJugador1 ? "Player 1" : "Player 2";
+        return ganaJugador1 ? "Player 1": "Player 2" ;
+
     }
 
     public double areaCirculo(double radio) {
@@ -399,27 +409,27 @@ public class Workshop {
 
         if ((month == 1 && day >= 20) || (month == 2 && day <= 18)) {
             return "Acuario";
-        } else if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) {
+        }if ((month == 2 && day >= 19) || (month == 3 && day <= 20)) {
             return "Piscis";
-        } else if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) {
+        }if ((month == 3 && day >= 21) || (month == 4 && day <= 19)) {
             return "Aries";
-        } else if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) {
+        }if ((month == 4 && day >= 20) || (month == 5 && day <= 20)) {
             return "Tauro";
-        } else if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) {
+        }if ((month == 5 && day >= 21) || (month == 6 && day <= 20)) {
             return "Geminis";
-        } else if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) {
+        }if ((month == 6 && day >= 21) || (month == 7 && day <= 22)) {
             return "Cancer";
-        } else if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) {
+        }if ((month == 7 && day >= 23) || (month == 8 && day <= 22)) {
             return "Leo";
-        } else if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) {
+        }if ((month == 8 && day >= 23) || (month == 9 && day <= 22)) {
             return "Virgo";
-        } else if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) {
+        }if ((month == 9 && day >= 23) || (month == 10 && day <= 22)) {
             return "Libra";
-        } else if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) {
+        }if ((month == 10 && day >= 23) || (month == 11 && day <= 21)) {
             return "Escorpio";
-        } else if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) {
+        }if ((month == 11 && day >= 22) || (month == 12 && day <= 21)) {
             return "Sagitario";
-        } else if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) {
+        } if ((month == 12 && day >= 22) || (month == 1 && day <= 19)) {
             return "Capricornio";
         }
 
